@@ -10,6 +10,9 @@ import java.math.BigInteger;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -26,7 +29,8 @@ public class TargetEdadPK implements Serializable {
     @Column(name = "RUC")
     private String ruc;
     @Basic(optional = false)
-    @NotNull
+    @SequenceGenerator(name = "seq_target", sequenceName = "SEQUENCE_TARGET", allocationSize = 1, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_target")
     @Column(name = "ID_TARGET_EDAD")
     private Integer idTargetEdad;
 
@@ -80,7 +84,7 @@ public class TargetEdadPK implements Serializable {
 
     @Override
     public String toString() {
-        return  ""+ruc + "-"+idTargetEdad;
+        return "" + ruc + "-" + idTargetEdad;
     }
-    
+
 }
