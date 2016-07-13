@@ -67,6 +67,39 @@ public class Elemento implements Serializable {
     @Size(min = 1, max = 512)
     @Column(name = "PATH")
     private String path;
+    @Size(max = 800)
+    @Column(name = "NOMBRE_IMAGEN")
+    private String nombreImagen;
+    @Size(max = 13)
+    @Column(name = "RUC")
+    private String ruc;
+    @Size(max = 300)
+    @Column(name = "PANTALLA")
+    private String pantalla;
+
+    public String getNombreImagen() {
+        return nombreImagen;
+    }
+
+    public void setNombreImagen(String nombreImagen) {
+        this.nombreImagen = nombreImagen;
+    }
+
+    public String getRuc() {
+        return ruc;
+    }
+
+    public void setRuc(String ruc) {
+        this.ruc = ruc;
+    }
+
+    public String getPantalla() {
+        return pantalla;
+    }
+
+    public void setPantalla(String pantalla) {
+        this.pantalla = pantalla;
+    }
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "elemento")
     private Collection<DetalleCampania> detalleCampaniaCollection;
 
