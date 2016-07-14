@@ -43,6 +43,29 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
         System.out.println("Creacion de nuevo elemento");
         super.create(entity);
     }
+    @POST
+    @Path("cargaImg")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public void cargaImg(String entity) {
+        System.out.println("Creacion de nuevo elemento:"+entity);
+    }
+//@POST
+//@Path("writeImage")
+//@Consumes({MediaType.APPLICATION_JSON})
+//public String writeImage(Img a) {
+//    System.out.println("Writeimage "+a);
+//        String path = "";
+//        FTPUploader ftpUploader;
+//        try {
+//        ftpUploader = new FTPUploader();
+//        File file = ftpUploader.toFile(a.getNombre(), Base64.getDecoder().decode(a.getContenido()));        
+//        path = ftpUploader.uploadFile(file, a.getNombre(), "/"+a.getTipo()+"/");       
+//        ftpUploader.disconnect();
+//        } catch (Exception ex) {
+//            Logger.getLogger(UsuarioFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//return path;
+//}
 
     @PUT
     @Path("edit/{id}")
@@ -90,5 +113,5 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }
