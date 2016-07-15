@@ -5,7 +5,12 @@
  */
 package ec.edu.espe.rest;
 
+import ec.edu.espe.dao.DetalleCampaniaFacade;
+import ec.edu.espe.dao.ElementoFacade;
+import ec.edu.espe.dao.SegmentoDetalleCampaniaFacade;
+import ec.edu.espe.entities.DetalleCampania;
 import ec.edu.espe.entities.Elemento;
+import ec.edu.espe.entities.SegmentoDetalleCampania;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -30,7 +35,9 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
 
     @PersistenceContext(unitName = "PublicidadWebHitchUsPU")
     private EntityManager em;
-
+    private ElementoFacade facade;
+    private DetalleCampaniaFacade facadeDetalleCampania;
+    private SegmentoDetalleCampaniaFacade facadeSegmentoDetalleCampania;
     public ElementoFacadeREST() {
         super(Elemento.class);
     }
@@ -62,7 +69,25 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
     @Path("find/{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Elemento find(@PathParam("id") Integer id) {
+        
         return super.find(id);
+    }
+    @GET
+    @Path("getImage")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Elemento getImage() {
+        
+        
+        List<Elemento> elementos=  facade.findAll();
+        List<SegmentoDetalleCampania> segmentos=facadeSegmentoDetalleCampania.findAll();
+        int random=(int) Math.round( Math.random()*(elementos.size()-1));
+        List<DetalleCampania> detalles=facadeDetalleCampania.findAll();
+        for (DetalleCampania detalle : detalles) {
+            if (detalle.getDetalleCampaniaPK().getIdElemento()==random) {
+                
+            }
+        }
+        return elementos.get(random);
     }
 
     @GET
