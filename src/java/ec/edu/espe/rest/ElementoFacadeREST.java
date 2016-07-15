@@ -6,7 +6,12 @@
 package ec.edu.espe.rest;
 
 import ec.edu.espe.entities.Elemento;
+import ec.edu.espe.util.FTPUploader;
+import ec.edu.espe.util.Img;
+import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,6 +24,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import sun.misc.BASE64Decoder;
 
 /**
  *
@@ -43,11 +49,25 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
         System.out.println("Creacion de nuevo elemento");
         super.create(entity);
     }
+
     @POST
-    @Path("cargaImg")
-    @Consumes(MediaType.TEXT_PLAIN)
-    public void cargaImg(String entity) {
-        System.out.println("Creacion de nuevo elemento:"+entity);
+    @Path("writeImage")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String writeImage(Img a) {
+        System.out.println("Writeimage " + a);
+        String path = "";
+        FTPUploader ftpUploader;
+        try {
+            ftpUploader = new FTPUploader();
+            BASE64Decoder decoder = new BASE64Decoder();
+             byte[] imageByte = decoder.decodeBuffer(a.getContenido());
+            File file = ftpUploader.toFile(a.getNombre(), imageByte);
+            path = ftpUploader.uploadFile(file, a.getNombre(), "/" + a.getTipo() + "/");
+            ftpUploader.disconnect();
+        } catch (Exception ex) {
+            Logger.getLogger(UsuarioFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return path;
     }
 //@POST
 //@Path("writeImage")
@@ -71,7 +91,7 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
     @Path("edit/{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Integer id, Elemento entity) {
-        System.out.println("Actualizar ID "+id);
+        System.out.println("Actualizar ID " + id);
         super.edit(entity);
     }
 
