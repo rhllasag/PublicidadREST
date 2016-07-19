@@ -34,6 +34,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -151,17 +152,17 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
         
     }
     @GET
-    @Path("getImage")
-    @Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
-    public String getImage(String path) {
+    @Path("getImage/{path}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public String getImage(@PathParam("path") String path) {
         System.out.println("dir " + path);
         String contenido = "";
+        String pathRaiz = "/publicidad/";
         FTPUploader ftpUploader;
         BASE64Encoder encoder = new BASE64Encoder();
         try {
             ftpUploader = new FTPUploader();
-            contenido = encoder.encodeBuffer(ftpUploader.downloadFile(path));
+            contenido = encoder.encodeBuffer(ftpUploader.downloadFile(pathRaiz+path));
             ftpUploader.disconnect();
 
 
