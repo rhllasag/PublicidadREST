@@ -17,6 +17,7 @@ import ec.edu.espe.util.FTPUploader;
 import ec.edu.espe.util.Img;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,6 +36,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 /**
  *
@@ -107,21 +109,25 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
         return super.find(id);
     }
     @GET
-    @Path("getImage")
+    @Path("getElement")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Elemento getImage() {
+    public Elemento getElement() {
         int elemento=-1;
         Campania campaniaActiva=new Campania();
         List<Campania> campanias=facadeCampania.findAll();
+        List<Campania> campaniasActivas=new ArrayList<>();
         for (Campania campania : campanias) {
             if (campania.getEstado().compareTo("A")==0)
             {
-                campaniaActiva=campania;
-                break;
+                
+                campaniasActivas.add(campania);
+                
             }
         }
         List<DetalleCampania> detallesCampaniaActivas=new ArrayList<>();
-        if (campaniaActiva!=null) {
+        if (!campaniasActivas.isEmpty()) {
+            int random0=(int) Math.round( Math.random()*(campaniasActivas.size()-1));
+            campaniaActiva=campaniasActivas.get(random0);          
             List<DetalleCampania> detalles=facadeDetalleCampania.findAll();
             for (DetalleCampania detalle : detalles) {
                 if (detalle.getDetalleCampaniaPK().getSecCampania()==campaniaActiva.getCampaniaPK().getSecCampania()) {
@@ -138,13 +144,32 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
         
         if(elemento!=-1)
         {
-            facade.find(elemento);
+            return (Elemento)facade.find(elemento);
         }
         return null;
         
         
     }
+    @GET
+    @Path("getImage")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String getImage(String path) {
+        System.out.println("dir " + path);
+        String contenido = "";
+        FTPUploader ftpUploader;
+        BASE64Encoder encoder = new BASE64Encoder();
+        try {
+            ftpUploader = new FTPUploader();
+            contenido = encoder.encodeBuffer(ftpUploader.downloadFile(path));
+            ftpUploader.disconnect();
 
+
+        } catch (Exception ex) {
+            Logger.getLogger(UsuarioFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return contenido;
+    }
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
