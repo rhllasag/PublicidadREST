@@ -5,15 +5,12 @@
  */
 package ec.edu.espe.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
- * @author Vicho
+ * @author JuanAndresCaspi
  */
 public class Img {
-    
+
     String nombre;
     String contenido;
     String tipo;
@@ -55,6 +52,5 @@ public class Img {
     public String toString() {
         return "Img{" + "nombre=" + nombre + ", contenido=" + contenido + ", tipo=" + tipo + '}';
     }
-    
-    
+
 }

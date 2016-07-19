@@ -5,13 +5,23 @@
  */
 package ec.edu.espe.rest;
 
+import ec.edu.espe.dao.CampaniaFacade;
 import ec.edu.espe.dao.DetalleCampaniaFacade;
 import ec.edu.espe.dao.ElementoFacade;
 import ec.edu.espe.dao.SegmentoDetalleCampaniaFacade;
+import ec.edu.espe.entities.Campania;
 import ec.edu.espe.entities.DetalleCampania;
 import ec.edu.espe.entities.Elemento;
 import ec.edu.espe.entities.SegmentoDetalleCampania;
+import ec.edu.espe.util.FTPUploader;
+import ec.edu.espe.util.Img;
+import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,6 +34,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import sun.misc.BASE64Decoder;
 
 /**
  *
@@ -35,9 +46,12 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
 
     @PersistenceContext(unitName = "PublicidadWebHitchUsPU")
     private EntityManager em;
+    @EJB
     private ElementoFacade facade;
+    @EJB
     private DetalleCampaniaFacade facadeDetalleCampania;
-    private SegmentoDetalleCampaniaFacade facadeSegmentoDetalleCampania;
+    @EJB
+    private CampaniaFacade facadeCampania;
     public ElementoFacadeREST() {
         super(Elemento.class);
     }
@@ -51,11 +65,31 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
         super.create(entity);
     }
 
+    @POST
+    @Path("writeImage")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String writeImage(Img a) {
+        System.out.println("Writeimage " + a);
+        String path = "";
+        FTPUploader ftpUploader;
+        try {
+            ftpUploader = new FTPUploader();
+            BASE64Decoder decoder = new BASE64Decoder();
+             byte[] imageByte = decoder.decodeBuffer(a.getContenido());
+            File file = ftpUploader.toFile(a.getNombre(), imageByte);
+            path = ftpUploader.uploadFile(file, a.getNombre(), "/" + a.getTipo() + "/");
+            ftpUploader.disconnect();
+        } catch (Exception ex) {
+            Logger.getLogger(UsuarioFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return path;
+    }
+
     @PUT
     @Path("edit/{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Integer id, Elemento entity) {
-        System.out.println("Actualizar ID "+id);
+        System.out.println("Actualizar ID " + id);
         super.edit(entity);
     }
 
@@ -76,18 +110,39 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
     @Path("getImage")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Elemento getImage() {
-        
-        
-        List<Elemento> elementos=  facade.findAll();
-        List<SegmentoDetalleCampania> segmentos=facadeSegmentoDetalleCampania.findAll();
-        int random=(int) Math.round( Math.random()*(elementos.size()-1));
-        List<DetalleCampania> detalles=facadeDetalleCampania.findAll();
-        for (DetalleCampania detalle : detalles) {
-            if (detalle.getDetalleCampaniaPK().getIdElemento()==random) {
-                
+        int elemento=-1;
+        Campania campaniaActiva=new Campania();
+        List<Campania> campanias=facadeCampania.findAll();
+        for (Campania campania : campanias) {
+            if (campania.getEstado().compareTo("A")==0)
+            {
+                campaniaActiva=campania;
+                break;
             }
         }
-        return elementos.get(random);
+        List<DetalleCampania> detallesCampaniaActivas=new ArrayList<>();
+        if (campaniaActiva!=null) {
+            List<DetalleCampania> detalles=facadeDetalleCampania.findAll();
+            for (DetalleCampania detalle : detalles) {
+                if (detalle.getDetalleCampaniaPK().getSecCampania()==campaniaActiva.getCampaniaPK().getSecCampania()) {
+                    detallesCampaniaActivas.add(detalle);
+                }
+            }
+            int random=(int) Math.round( Math.random()*(detallesCampaniaActivas.size()-1));
+            DetalleCampania detalleCampaniaAMostrar=new DetalleCampania();
+            detalleCampaniaAMostrar=detallesCampaniaActivas.get(random);
+            elemento=detalleCampaniaAMostrar.getDetalleCampaniaPK().getIdElemento();
+            
+            
+        }
+        
+        if(elemento!=-1)
+        {
+            facade.find(elemento);
+        }
+        return null;
+        
+        
     }
 
     @GET
@@ -115,5 +170,5 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

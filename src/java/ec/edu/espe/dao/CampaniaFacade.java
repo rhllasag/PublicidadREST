@@ -16,7 +16,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class CampaniaFacade extends AbstractFacade<Campania> {
-
+    
     @PersistenceContext(unitName = "PublicidadWebHitchUsPU")
     private EntityManager em;
 
