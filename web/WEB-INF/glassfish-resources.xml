@@ -20,5 +20,6 @@
         <property name="URL" value="jdbc:oracle:thin:@localhost:1521:XE"/>
         <property name="driverClass" value="oracle.jdbc.OracleDriver"/>
     </jdbc-connection-pool>
+    <jdbc-resource enabled="true" jndi-name="java:app/publicidad" object-type="user" pool-name="oracle-thin_XE_publicidadPool"/>
     <jdbc-resource enabled="true" jndi-name="java:app/publicidad" object-type="user" pool-name="oracle-thin_XE_publicidadPool"/>-->
 </resources>
