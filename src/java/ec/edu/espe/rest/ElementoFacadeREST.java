@@ -111,7 +111,7 @@ public class ElementoFacadeREST extends AbstractFacade<Elemento> {
     public String countREST() {
         return String.valueOf(super.count());
     }
-
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;
