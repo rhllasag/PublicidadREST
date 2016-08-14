@@ -5,13 +5,12 @@
  */
 package ec.edu.espe.util;
 
+import com.sun.jersey.core.util.Base64;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 /**
  *
@@ -28,8 +27,8 @@ public class Util {
         BufferedImage image = null;
         byte[] imageByte;
         try {
-            BASE64Decoder decoder = new BASE64Decoder();
-            imageByte = decoder.decodeBuffer(imageString);
+            //BASE64Decoder decoder = new BASE64Decoder();
+            imageByte = Base64.decode(imageString);
             ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
             image = ImageIO.read(bis);
             bis.close();
@@ -53,8 +52,8 @@ public class Util {
             ImageIO.write(image, type, bos);
             byte[] imageBytes = bos.toByteArray();
 
-            BASE64Encoder encoder = new BASE64Encoder();
-            imageString = encoder.encode(imageBytes);
+            //BASE64Encoder encoder = new BASE64Encoder();
+            imageString = Base64.encode(imageBytes).toString();
 
             bos.close();
         } catch (IOException e) {

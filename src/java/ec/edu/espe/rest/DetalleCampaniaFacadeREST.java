@@ -5,9 +5,13 @@
  */
 package ec.edu.espe.rest;
 
+import ec.edu.espe.dao.DetalleCampaniaFacade;
 import ec.edu.espe.entities.DetalleCampania;
 import ec.edu.espe.entities.DetalleCampaniaPK;
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,6 +23,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 
@@ -32,6 +37,8 @@ public class DetalleCampaniaFacadeREST extends AbstractFacade<DetalleCampania> {
 
     @PersistenceContext(unitName = "PublicidadWebHitchUsPU")
     private EntityManager em;
+    @EJB
+    DetalleCampaniaFacade campaniaFacade;
 
     private DetalleCampaniaPK getPrimaryKey(PathSegment pathSegment) {
         /*
@@ -77,11 +84,30 @@ public class DetalleCampaniaFacadeREST extends AbstractFacade<DetalleCampania> {
         super.edit(entity);
     }
 
+    @GET
+    @Path("countClick/{id}")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void countClick(@PathParam("id") Integer idElemento) {
+        System.out.println(idElemento);
+        List<DetalleCampania> detalles = campaniaFacade.findAll();
+        DetalleCampania tmp = new DetalleCampania();
+        for (DetalleCampania detalle : detalles) {
+            if (Objects.equals(detalle.getDetalleCampaniaPK().getIdElemento(), idElemento)) {
+                tmp = detalle;
+                break;
+            }
+        }
+        if (tmp != null) {
+            tmp.setClics(tmp.getClics().add(BigInteger.ONE));
+            super.edit(tmp);
+        }
+    }
+
     @DELETE
     @Path("remove/{id}")
     public void remove(@PathParam("id") PathSegment id) {
         ec.edu.espe.entities.DetalleCampaniaPK key = getPrimaryKey(id);
-        key.setRuc(id.toString().substring(id.toString().indexOf("=")+1));
+        key.setRuc(id.toString().substring(id.toString().indexOf("=") + 1));
         System.out.println(key.toString());
         super.remove(super.find(key));
     }
@@ -91,7 +117,7 @@ public class DetalleCampaniaFacadeREST extends AbstractFacade<DetalleCampania> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public DetalleCampania find(@PathParam("id") PathSegment id) {
         ec.edu.espe.entities.DetalleCampaniaPK key = getPrimaryKey(id);
-        key.setRuc(id.toString().substring(id.toString().indexOf("=")+1));
+        key.setRuc(id.toString().substring(id.toString().indexOf("=") + 1));
         System.out.println(key.toString());
         return super.find(key);
     }
@@ -121,5 +147,5 @@ public class DetalleCampaniaFacadeREST extends AbstractFacade<DetalleCampania> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

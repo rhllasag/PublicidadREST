@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -51,7 +50,7 @@ public class FacturaEmpresa implements Serializable {
     private static final long serialVersionUID = 1L;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Id
-    @SequenceGenerator(name="seq_factura", sequenceName = "SEQUENCE_FACTURA",allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "seq_factura", sequenceName = "SEQUENCE_FACTURA", allocationSize = 1, initialValue = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_factura")
     @NotNull
     @Column(name = "ID_FACTURA")
@@ -74,6 +73,8 @@ public class FacturaEmpresa implements Serializable {
     private BigDecimal porcentajeIva;
     @Column(name = "SUBTOTAL")
     private BigDecimal subtotal;
+    @Column(name = "RAZON_SOCIAL")
+    private String razonSocial;
     @OneToMany(mappedBy = "idFactura")
     private Collection<DetalleFactura> detalleFacturaCollection;
     @JoinColumn(name = "RUC", referencedColumnName = "RUC")
@@ -151,6 +152,14 @@ public class FacturaEmpresa implements Serializable {
         this.subtotal = subtotal;
     }
 
+    public String getRazonSocial() {
+        return razonSocial;
+    }
+
+    public void setRazonSocial(String razonSocial) {
+        this.razonSocial = razonSocial;
+    }
+
     @XmlTransient
     public Collection<DetalleFactura> getDetalleFacturaCollection() {
         return detalleFacturaCollection;
@@ -192,5 +201,5 @@ public class FacturaEmpresa implements Serializable {
     public String toString() {
         return "ec.edu.espe.model.FacturaEmpresa[ idFactura=" + idFactura + " ]";
     }
-    
+
 }

@@ -6,6 +6,7 @@
 package ec.edu.espe.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.CascadeType;
@@ -47,6 +48,8 @@ public class DetalleCampania implements Serializable {
     private BigInteger despliegues;
     @Column(name = "CLICS")
     private BigInteger clics;
+    @Column(name = "PRECIO_UNITARIO")
+    private BigDecimal precioUnitario;
     @Size(max = 3)
     @Column(name = "MODO_FACTURACION")
     private String modoFacturacion;
@@ -120,6 +123,14 @@ public class DetalleCampania implements Serializable {
         this.elemento = elemento;
     }
 
+    public BigDecimal getPrecioUnitario() {
+        return precioUnitario;
+    }
+
+    public void setPrecioUnitario(BigDecimal precioUnitario) {
+        this.precioUnitario = precioUnitario;
+    }
+
     @XmlTransient
     public Collection<SegmentoDetalleCampania> getSegmentoDetalleCampaniaCollection() {
         return segmentoDetalleCampaniaCollection;
@@ -153,5 +164,5 @@ public class DetalleCampania implements Serializable {
     public String toString() {
         return "ec.edu.espe.model.DetalleCampania[ detalleCampaniaPK=" + detalleCampaniaPK + " ]";
     }
-    
+
 }
